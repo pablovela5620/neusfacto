@@ -1,0 +1,9 @@
+[project]
+name = "neusfacto"
+version = "0.1.0"
+
+[tool.setuptools.packages.find]
+include = ["neusfacto"]
+
+[project.entry-points.'nerfstudio.method_configs']
+neusfacto = 'neusfacto.neusfacto_config:neusfacto_method'
