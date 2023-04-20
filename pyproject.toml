@@ -2,6 +2,12 @@
 name = "neusfacto"
 version = "0.1.0"
 
+dependencies=[
+    "rerun-sdk==0.4.0",
+    "timm==0.4.12",
+    "pytorch_lightning<2.0",
+]
+
 [tool.setuptools.packages.find]
 include = ["neusfacto"]
 
