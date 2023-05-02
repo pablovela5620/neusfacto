@@ -15,3 +15,8 @@ Make sure to have the omnidata repo installed https://github.com/EPFL-VILAB/omni
 ```
 python nerfstudio_to_sdfstudio.py --data PATH TO DATA --output-dir PATH TO OUTPUT --data-type colmap --scene-type indoor --mono-prior --omnidata-path PATH TO OMNIDATA REPO --pretrained-models PATH-TO-PRETRAINED OMNIDATA MODELS
 ```
+
+## Example command
+```
+ns-train neus-facto-custom --pipeline.model.sdf-field.inside-outside True --pipeline.model.sdf_field.bias 0.8 --pipeline.model.sdf_field.beta_init 0.3 --pipeline.model.mono-depth-loss-mult 0.1 --pipeline.model.mono-normal-loss-mult 0.05 --vis wandb --experiment-name corazon_sdf sdfstudio-data --data data/corazon_studio_sdf/ --include_mono_prior True
+```
