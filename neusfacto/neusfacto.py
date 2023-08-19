@@ -39,8 +39,9 @@ from nerfstudio.model_components.ray_samplers import (
     ProposalNetworkSampler,
     UniformSampler,
 )
-from nerfstudio.models.neus import NeuSModel, NeuSModelConfig
 from nerfstudio.utils import colormaps
+
+from neusfacto.neus import NeuSModel, NeuSModelConfig
 
 
 @dataclass
@@ -63,7 +64,12 @@ class NeuSFactoModelConfig(NeuSModelConfig):
     proposal_net_args_list: List[Dict] = field(
         default_factory=lambda: [
             {"hidden_dim": 16, "log2_hashmap_size": 17, "num_levels": 5, "max_res": 64},
-            {"hidden_dim": 16, "log2_hashmap_size": 17, "num_levels": 5, "max_res": 256},
+            {
+                "hidden_dim": 16,
+                "log2_hashmap_size": 17,
+                "num_levels": 5,
+                "max_res": 256,
+            },
         ]
     )
     """Arguments for the proposal density fields."""
@@ -100,23 +106,31 @@ class NeuSFactoModel(NeuSModel):
         # Build the proposal network(s)
         self.proposal_networks = torch.nn.ModuleList()
         if self.config.use_same_proposal_network:
-            assert len(self.config.proposal_net_args_list) == 1, "Only one proposal network is allowed."
+            assert (
+                len(self.config.proposal_net_args_list) == 1
+            ), "Only one proposal network is allowed."
             prop_net_args = self.config.proposal_net_args_list[0]
             network = HashMLPDensityField(
-                self.scene_box.aabb, spatial_distortion=self.scene_contraction, **prop_net_args
+                self.scene_box.aabb,
+                spatial_distortion=self.scene_contraction,
+                **prop_net_args,
             )
             self.proposal_networks.append(network)
             self.density_fns.extend([network.density_fn for _ in range(num_prop_nets)])
         else:
             for i in range(num_prop_nets):
-                prop_net_args = self.config.proposal_net_args_list[min(i, len(self.config.proposal_net_args_list) - 1)]
+                prop_net_args = self.config.proposal_net_args_list[
+                    min(i, len(self.config.proposal_net_args_list) - 1)
+                ]
                 network = HashMLPDensityField(
                     self.scene_box.aabb,
                     spatial_distortion=self.scene_contraction,
                     **prop_net_args,
                 )
                 self.proposal_networks.append(network)
-            self.density_fns.extend([network.density_fn for network in self.proposal_networks])
+            self.density_fns.extend(
+                [network.density_fn for network in self.proposal_networks]
+            )
 
         # update proposal network every iterations
         update_schedule = lambda step: -1
@@ -172,7 +186,9 @@ class NeuSFactoModel(NeuSModel):
 
     def sample_and_forward_field(self, ray_bundle: RayBundle) -> Dict[str, Any]:
         """Sample rays using proposal networks and compute the corresponding field outputs."""
-        ray_samples, weights_list, ray_samples_list = self.proposal_sampler(ray_bundle, density_fns=self.density_fns)
+        ray_samples, weights_list, ray_samples_list = self.proposal_sampler(
+            ray_bundle, density_fns=self.density_fns
+        )
 
         field_outputs = self.field(ray_samples, return_alphas=True)
         weights, transmittance = ray_samples.get_weights_and_transmittance_from_alphas(
@@ -194,13 +210,18 @@ class NeuSFactoModel(NeuSModel):
         return samples_and_field_outputs
 
     def get_loss_dict(
-        self, outputs: Dict[str, Any], batch: Dict[str, Any], metrics_dict: Optional[Dict[str, Any]] = None
+        self,
+        outputs: Dict[str, Any],
+        batch: Dict[str, Any],
+        metrics_dict: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Compute the loss dictionary, including interlevel loss for proposal networks."""
         loss_dict = super().get_loss_dict(outputs, batch, metrics_dict)
 
         if self.training:
-            loss_dict["interlevel_loss"] = self.config.interlevel_loss_mult * interlevel_loss(
+            loss_dict[
+                "interlevel_loss"
+            ] = self.config.interlevel_loss_mult * interlevel_loss(
                 outputs["weights_list"], outputs["ray_samples_list"]
             )
 

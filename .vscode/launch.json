@@ -1,0 +1,60 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Clean Neusfacto - Corazon",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/pablo/miniconda3/envs/neusfacto/bin/ns-train",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "NERFSTUDIO_METHOD_CONFIGS": "clean_neusfacto=neusfacto.neusfacto_config:clean_neusfacto",
+                "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+                "clean_neusfacto",
+                "--pipeline.model.sdf-field.use-grid-feature=True",
+                "--pipeline.model.sdf-field.hidden-dim=256",
+                "--pipeline.model.sdf-field.num-layers=2",
+                "--pipeline.model.sdf-field.num-layers-color=2",
+                "--pipeline.model.sdf-field.use-appearance-embedding=False",
+                "--pipeline.model.sdf-field.geometric-init=True",
+                "--pipeline.model.sdf-field.inside-outside=True",
+                "--pipeline.model.sdf-field.bias=0.8",
+                "--pipeline.model.sdf-field.beta-init=0.3",
+                "--pipeline.model.eikonal-loss-mult=0.1",
+                "--pipeline.model.background-model=none",
+                "--pipeline.model.mono-depth-loss-mult=0.1",
+                "--pipeline.model.mono-normal-loss-mult=0.05",
+                "--vis=wandb",
+                "--experiment-name=corazon-sdf-nearfar",
+                "sdfstudio-data",
+                "--data=/home/pablo/0Dev/work/room-sdf/data/corazon_studio/sdf-object",
+                "--include_mono_prior=True",
+                "--auto-orient=True",
+            ]
+        },
+        {
+            "name": "Python: Neusfacto - DTU Scan 65",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/pablo/miniconda3/envs/neusfacto/bin/ns-train",
+            "console": "integratedTerminal",
+            // "env": {"CUDA_VISIBLE_DEVICES":"1"},
+            "justMyCode": false,
+            "args": [
+                "clean-neus-facto",
+                // "--trainer.steps-per-eval-batch=500",
+                "--pipeline.model.sdf-field.inside-outside=False",
+                // "--pipeline.model.mono-depth-loss-mult=0.1",
+                // "--pipeline.model.mono-normal-loss-mult=0.05",
+                // "--vis=wandb", 
+                "sdfstudio-data",
+                "--data=data/sdfstudio-demo-data/dtu-scan65",
+                "--auto-orient=True"
+                // "--include_mono_prior=True"
+            ]
+        },
+    ]
+}

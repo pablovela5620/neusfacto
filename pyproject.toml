@@ -3,7 +3,8 @@ name = "neusfacto"
 version = "0.1.0"
 
 dependencies=[
-    "rerun-sdk==0.4.0",
+    "nerfstudio==0.3.3",
+    "rerun-sdk==0.8.1",
     "timm==0.4.12",
     "pytorch_lightning<2.0",
 ]
@@ -12,4 +13,4 @@ dependencies=[
 include = ["neusfacto"]
 
 [project.entry-points.'nerfstudio.method_configs']
-neusfacto = 'neusfacto.neusfacto_config:neusfacto_method'
+clean_neusfacto = 'neusfacto.neusfacto_config:clean_neusfacto'
